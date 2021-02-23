@@ -404,6 +404,11 @@ builtin =
     / Integer-clamp
     / Natural-subtract
     / Double-show
+    / Double-add
+    / Double-subtract
+    / Double-multiply
+    / Double-divide
+    / Double-sqrt
     / List-build
     / List-fold
     / List-length
@@ -457,6 +462,11 @@ Integer-show      = %x49.6e.74.65.67.65.72.2f.73.68.6f.77
 Integer-negate    = %x49.6e.74.65.67.65.72.2f.6e.65.67.61.74.65
 Integer-clamp     = %x49.6e.74.65.67.65.72.2f.63.6c.61.6d.70
 Double-show       = %x44.6f.75.62.6c.65.2f.73.68.6f.77
+Double-add        = %x44.6f.75.62.6c.65.2f.61.64.64
+Double-subtract   = %x44.6f.75.62.6c.65.2f.73.75.62.74.72.61.63.74
+Double-multiply   = %x44.6f.75.62.6c.65.2f.6d.75.6c.74.69.70.6c.79
+Double-divide     = %x44.6f.75.62.6c.65.2f.64.69.76.69.64.65
+Double-sqrt       = %x44.6f.75.62.6c.65.2f.73.71.72.74
 List-build        = %x4c.69.73.74.2f.62.75.69.6c.64
 List-fold         = %x4c.69.73.74.2f.66.6f.6c.64
 List-length       = %x4c.69.73.74.2f.6c.65.6e.67.74.68

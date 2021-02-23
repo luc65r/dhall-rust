@@ -34,6 +34,11 @@ pub enum Builtin {
     IntegerNegate,
     IntegerClamp,
     DoubleShow,
+    DoubleAdd,
+    DoubleSubtract,
+    DoubleMultiply,
+    DoubleDivide,
+    DoubleSqrt,
     ListBuild,
     ListFold,
     ListLength,
@@ -70,6 +75,11 @@ impl Builtin {
             "Integer/negate" => Some(IntegerNegate),
             "Integer/clamp" => Some(IntegerClamp),
             "Double/show" => Some(DoubleShow),
+            "Double/add" => Some(DoubleAdd),
+            "Double/subtract" => Some(DoubleSubtract),
+            "Double/multiply" => Some(DoubleMultiply),
+            "Double/divide" => Some(DoubleDivide),
+            "Double/sqrt" => Some(DoubleSqrt),
             "List/build" => Some(ListBuild),
             "List/fold" => Some(ListFold),
             "List/length" => Some(ListLength),
@@ -211,6 +221,12 @@ pub fn type_of_builtin<'cx>(cx: Ctxt<'cx>, b: Builtin) -> Hir<'cx> {
         IntegerClamp => make_type!(Integer -> Natural),
 
         DoubleShow => make_type!(Double -> Text),
+        DoubleAdd => make_type!(Double -> Double -> Double),
+        DoubleSubtract => make_type!(Double -> Double -> Double),
+        DoubleMultiply => make_type!(Double -> Double -> Double),
+        DoubleDivide => make_type!(Double -> Double -> Double),
+        DoubleSqrt => make_type!(Double -> Double),
+
         TextShow => make_type!(Text -> Text),
         TextReplace => make_type!(
             forall (needle: Text) ->
@@ -403,6 +419,36 @@ fn apply_builtin<'cx>(
         },
         (Builtin::DoubleShow, [n]) => match &*n.kind() {
             Num(Double(n)) => Ret::Nir(Nir::from_text(n)),
+            _ => Ret::DoneAsIs,
+        },
+        (Builtin::DoubleAdd, [a, b]) => match (&*a.kind(), &*b.kind()) {
+            (Num(Double(a)), Num(Double(b))) => {
+                Ret::NirKind(Num(Double((f64::from(*a) + f64::from(*b)).into())))
+            }
+            _ => Ret::DoneAsIs,
+        },
+        (Builtin::DoubleSubtract, [a, b]) => match (&*a.kind(), &*b.kind()) {
+            (Num(Double(a)), Num(Double(b))) => {
+                Ret::NirKind(Num(Double((f64::from(*a) - f64::from(*b)).into())))
+            }
+            _ => Ret::DoneAsIs,
+        },
+        (Builtin::DoubleMultiply, [a, b]) => match (&*a.kind(), &*b.kind()) {
+            (Num(Double(a)), Num(Double(b))) => {
+                Ret::NirKind(Num(Double((f64::from(*a) * f64::from(*b)).into())))
+            }
+            _ => Ret::DoneAsIs,
+        },
+        (Builtin::DoubleDivide, [a, b]) => match (&*a.kind(), &*b.kind()) {
+            (Num(Double(a)), Num(Double(b))) => {
+                Ret::NirKind(Num(Double((f64::from(*a) / f64::from(*b)).into())))
+            }
+            _ => Ret::DoneAsIs,
+        },
+        (Builtin::DoubleSqrt, [n]) => match &*n.kind() {
+            Num(Double(n)) => {
+                Ret::NirKind(Num(Double(f64::from(*n).sqrt().into())))
+            }
             _ => Ret::DoneAsIs,
         },
         (Builtin::TextShow, [v]) => match &*v.kind() {
@@ -614,6 +660,11 @@ impl std::fmt::Display for Builtin {
             IntegerClamp => "Integer/clamp",
             IntegerShow => "Integer/show",
             DoubleShow => "Double/show",
+            DoubleAdd => "Double/add",
+            DoubleSubtract => "Double/subtract",
+            DoubleMultiply => "Double/multiply",
+            DoubleDivide => "Double/divide",
+            DoubleSqrt => "Double/sqrt",
             ListBuild => "List/build",
             ListFold => "List/fold",
             ListLength => "List/length",
