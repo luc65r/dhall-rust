@@ -39,6 +39,12 @@ pub enum Builtin {
     DoubleMultiply,
     DoubleDivide,
     DoubleSqrt,
+    DoubleLt,
+    DoubleGt,
+    DoubleLe,
+    DoubleGe,
+    DoubleEq,
+    DoubleNe,
     ListBuild,
     ListFold,
     ListLength,
@@ -80,6 +86,12 @@ impl Builtin {
             "Double/multiply" => Some(DoubleMultiply),
             "Double/divide" => Some(DoubleDivide),
             "Double/sqrt" => Some(DoubleSqrt),
+            "Double/lt" => Some(DoubleLt),
+            "Double/gt" => Some(DoubleGt),
+            "Double/le" => Some(DoubleLe),
+            "Double/ge" => Some(DoubleGe),
+            "Double/eq" => Some(DoubleEq),
+            "Double/ne" => Some(DoubleNe),
             "List/build" => Some(ListBuild),
             "List/fold" => Some(ListFold),
             "List/length" => Some(ListLength),
@@ -226,6 +238,12 @@ pub fn type_of_builtin<'cx>(cx: Ctxt<'cx>, b: Builtin) -> Hir<'cx> {
         DoubleMultiply => make_type!(Double -> Double -> Double),
         DoubleDivide => make_type!(Double -> Double -> Double),
         DoubleSqrt => make_type!(Double -> Double),
+        DoubleLt => make_type!(Double -> Double -> Bool),
+        DoubleGt => make_type!(Double -> Double -> Bool),
+        DoubleLe => make_type!(Double -> Double -> Bool),
+        DoubleGe => make_type!(Double -> Double -> Bool),
+        DoubleEq => make_type!(Double -> Double -> Bool),
+        DoubleNe => make_type!(Double -> Double -> Bool),
 
         TextShow => make_type!(Text -> Text),
         TextReplace => make_type!(
@@ -451,6 +469,42 @@ fn apply_builtin<'cx>(
             }
             _ => Ret::DoneAsIs,
         },
+        (Builtin::DoubleLt, [a, b]) => match (&*a.kind(), &*b.kind()) {
+            (Num(Double(a)), Num(Double(b))) => {
+                Ret::NirKind(Num(Bool(f64::from(*a) < f64::from(*b))))
+            }
+            _ => Ret::DoneAsIs,
+        },
+        (Builtin::DoubleGt, [a, b]) => match (&*a.kind(), &*b.kind()) {
+            (Num(Double(a)), Num(Double(b))) => {
+                Ret::NirKind(Num(Bool(f64::from(*a) > f64::from(*b))))
+            }
+            _ => Ret::DoneAsIs,
+        },
+        (Builtin::DoubleLe, [a, b]) => match (&*a.kind(), &*b.kind()) {
+            (Num(Double(a)), Num(Double(b))) => {
+                Ret::NirKind(Num(Bool(f64::from(*a) <= f64::from(*b))))
+            }
+            _ => Ret::DoneAsIs,
+        },
+        (Builtin::DoubleGe, [a, b]) => match (&*a.kind(), &*b.kind()) {
+            (Num(Double(a)), Num(Double(b))) => {
+                Ret::NirKind(Num(Bool(f64::from(*a) >= f64::from(*b))))
+            }
+            _ => Ret::DoneAsIs,
+        },
+        (Builtin::DoubleEq, [a, b]) => match (&*a.kind(), &*b.kind()) {
+            (Num(Double(a)), Num(Double(b))) => {
+                Ret::NirKind(Num(Bool(f64::from(*a) == f64::from(*b))))
+            }
+            _ => Ret::DoneAsIs,
+        },
+        (Builtin::DoubleNe, [a, b]) => match (&*a.kind(), &*b.kind()) {
+            (Num(Double(a)), Num(Double(b))) => {
+                Ret::NirKind(Num(Bool(f64::from(*a) != f64::from(*b))))
+            }
+            _ => Ret::DoneAsIs,
+        },
         (Builtin::TextShow, [v]) => match &*v.kind() {
             TextLit(tlit) => {
                 if let Some(s) = tlit.as_text() {
@@ -665,6 +719,12 @@ impl std::fmt::Display for Builtin {
             DoubleMultiply => "Double/multiply",
             DoubleDivide => "Double/divide",
             DoubleSqrt => "Double/sqrt",
+            DoubleLt => "Double/lt",
+            DoubleGt => "Double/gt",
+            DoubleLe => "Double/le",
+            DoubleGe => "Double/ge",
+            DoubleEq => "Double/eq",
+            DoubleNe => "Double/ne",
             ListBuild => "List/build",
             ListFold => "List/fold",
             ListLength => "List/length",
